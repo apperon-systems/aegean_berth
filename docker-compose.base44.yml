@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aegean
+      POSTGRES_PASSWORD: aegean_dev_pw
+      POSTGRES_DB: aegean_berth
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aegean -d aegean_berth"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: node:22-alpine
+    working_dir: /app/server
+    command: sh -c "[ -d node_modules/pg ] || npm install --no-audit --no-fund; node src/migrate.js && node src/seed.js && exec node --watch src/index.js"
+    volumes:
+      - .:/app
+      - server_node_modules:/app/server/node_modules
+    environment:
+      # RLS-enforced app role (created by migration 001). Owner bypasses RLS — used only for migrate/seed.
+      DATABASE_URL: postgres://app_api:app_api_dev_pw@db:5432/aegean_berth
+      DATABASE_OWNER_URL: postgres://aegean:aegean_dev_pw@db:5432/aegean_berth
+      PORT: "4000"
+      JWT_SECRET: dev-only-secret-change-me
+      DOC_ENC_KEY: dev-only-doc-encryption-key-32b
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "4000"
+
+  web:
+    image: node:22-alpine
+    working_dir: /app/web
+    command: sh -c "[ -d node_modules/vite ] || npm install --no-audit --no-fund; exec npx vite --host 0.0.0.0 --port 5173 --strictPort"
+    volumes:
+      - .:/app
+      - web_node_modules:/app/web/node_modules
+    environment:
+      VITE_API_TARGET: http://api:4000
+    ports:
+      - "3000:5173"
+    depends_on:
+      - api
+
+volumes:
+  dbdata:
+  server_node_modules:
+  web_node_modules:

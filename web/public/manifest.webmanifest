@@ -1,0 +1,9 @@
+{
+  "name": "AEGEAN BERTH — Sailing holidays in Greece",
+  "short_name": "Aegean Berth",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#0b1d33",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
