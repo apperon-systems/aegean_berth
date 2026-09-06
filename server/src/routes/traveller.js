@@ -115,7 +115,7 @@ r.post('/bookings', async (req, res) => {
     // Guaranteed flip → notify waitlisted users (Block B #4).
     const afterDep = await client.query(`SELECT * FROM departures WHERE id = $1`, [departure_id]);
     const fresh = afterDep.rows[0];
-    if (fresh.status === 'guaranteed' && departure.status !== 'guaranteed') {
+    if (fresh?.status === 'guaranteed' && departure.status !== 'guaranteed') {
       const wl = await client.query(`SELECT u.email, u.name FROM waitlist_entries w JOIN users u ON u.id = w.user_id WHERE w.departure_id = $1`, [departure_id]);
       for (const w of wl.rows) await integrations.comms.sendEmail(w.email, 'departure_guaranteed', { name: w.name, departure: fresh.embarkation_port });
       await audit(client, user, 'departure.guaranteed', 'departure', departure_id, { status: departure.status }, { status: 'guaranteed' });
