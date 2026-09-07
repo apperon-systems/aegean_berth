@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import CookieBanner from './components/CookieBanner.jsx';
+import ConsentBanner from './components/ConsentBanner.jsx';
 import HomePage from './pages/HomePage.jsx';
 import SearchPage from './pages/SearchPage.jsx';
 import DeparturePage from './pages/DeparturePage.jsx';
@@ -40,7 +40,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
-      <CookieBanner />
+      <ConsentBanner />
     </div>
   );
 }

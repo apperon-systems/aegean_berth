@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../lib/i18n.jsx';
 
-export default function CookieBanner() {
+export default function ConsentBanner() {
   const [consent, setConsent] = useState(() => localStorage.getItem('ab_cookie_consent'));
   if (consent) return null;
   const decide = (val) => { localStorage.setItem('ab_cookie_consent', val); setConsent(val); };
